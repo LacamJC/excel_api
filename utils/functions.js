@@ -1,4 +1,4 @@
-const { excelSerialDateToJSDate } = require("./tratamentos")
+const { excelSerialDateToJSDate, excelSerialTimeToHMS } = require("./tratamentos")
 const fs = require("fs");
 
 const xlsx = require("xlsx");
@@ -9,10 +9,9 @@ exports.ler_arquivo = (caminho, cabecalhos) => {
         const nomePlanilha = workbook.SheetNames[0];
         const planilha = workbook.Sheets[nomePlanilha];
 
-
         const dados = xlsx.utils.sheet_to_json(planilha, { header: cabecalhos });
 
-        // Converter datas
+        // Converter datas e tempos
         const dadosConvertidos = dados.map(item => {
             if (item.DataDeCriacao) {
                 item.DataDeCriacao = excelSerialDateToJSDate(item.DataDeCriacao);
@@ -23,11 +22,13 @@ exports.ler_arquivo = (caminho, cabecalhos) => {
             if (item.DataDeFinalizacao) {
                 item.DataDeFinalizacao = excelSerialDateToJSDate(item.DataDeFinalizacao);
             }
+            if (item.TempoDeTrabalho) {
+                item.TempoDeTrabalho = excelSerialTimeToHMS(item.TempoDeTrabalho);
+            }
             return item;
         });
 
-        return dadosConvertidos
-
+        return dadosConvertidos;
 
     } catch (error) {
         console.log(error);
@@ -45,3 +46,5 @@ exports.escrever_arquivo_json = (input) => {
         }
     });
 }
+
+
