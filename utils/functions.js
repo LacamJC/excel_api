@@ -48,3 +48,77 @@ exports.escrever_arquivo_json = (input) => {
 }
 
 
+exports.calcular_dias_para_finalizacao = (registros) => {
+    return registros.map((registro) => {
+        if (registro.DataDeCriacao && registro.DataDeFinalizacao) {
+            const dataCriacao = new Date(registro.DataDeCriacao);
+            const dataFinalizacao = new Date(registro.DataDeFinalizacao);
+            const diffEmMs = Math.abs(dataFinalizacao - dataCriacao);
+            const diffEmDias = Math.ceil(diffEmMs / (1000 * 60 * 60 * 24));
+            return {
+                ...registro,
+                DiasParaFinalizacao: diffEmDias,
+            };
+        } else {
+            return {
+                ...registro,
+                DiasParaFinalizacao: null, // Ou algum outro valor indicando que não foi possível calcular
+            };
+        }
+    });
+}
+
+exports.calcular_media_de_dias_para_finalizar = (registros) => {
+    let totalDias = 0;
+    let contador = 0;
+    let menor;
+    let maior;
+    registros.forEach((registro) => {
+        if (registro.DataDeCriacao && registro.DataDeFinalizacao) {
+            const dataCriacao = new Date(registro.DataDeCriacao);
+            const dataFinalizacao = new Date(registro.DataDeFinalizacao);
+            const diffEmMs = Math.abs(dataFinalizacao - dataCriacao);
+            const diffEmDias = Math.ceil(diffEmMs / (1000 * 60 * 60 * 24));
+            if(contador == 0)
+            {
+                menor = diffEmDias
+                maior = menor
+            }
+
+            if(diffEmDias < menor) {
+                menor = diffEmDias
+            }
+            if(diffEmDias > maior)
+            {
+                maior = diffEmDias
+            }
+            totalDias += diffEmDias;
+            contador++;
+            
+            // console.log(registro)
+        
+        }
+    });
+
+    console.log(`
+            Maior tempo de finalização: ${maior}
+            Menor tempo de finalização: ${menor}
+            Média de tempo para finalização: ${Math.floor(totalDias/contador)}
+        `)
+
+    if (contador === 0) {
+        return 0; // Ou algum outro valor indicando que não foi possível calcular a média
+    }
+    return Math.floor(totalDias / contador);
+} 
+
+exports.contar_chamados = (registros) => {
+    let contador = 0;
+
+    registros.forEach(() => {
+        contador++;
+    })
+
+    // console.log(contador)
+    return contador
+}
